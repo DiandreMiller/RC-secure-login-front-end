@@ -3,16 +3,17 @@ import './App.css';
 // import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+//Commons
+import Navbar from './Common/Navbar';
+import Footer from './Common/Footer';
+
 //Pages
 import HomePage from './Pages/HomePage';
 import AboutPage from './Pages/AboutPage';
 import MoviesPage from './Pages/MoviesPage';
-
-//Commons
-import Navbar from './Common/Navbar';
-import Footer from './Common/Footer';
 import FourOFourPage from './Pages/FourOFourPage';
 import LoginAndSignUpPage from './Pages/LoginAndSignUpPage';
+import ForgotPasswordPage from './Pages/ForgotPasswordPage';
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Routes>
           <Route element={<HomePage />} path='/' />
           <Route element={<AboutPage />} path='/about' />
+          <Route element={<ForgotPasswordPage />} path='/forgot-password' />
           <Route element={<LoginAndSignUpPage />} path='/login-signup' />
           <Route element={<MoviesPage />} path='/movies' />
           <Route element={<FourOFourPage />} path='*' />

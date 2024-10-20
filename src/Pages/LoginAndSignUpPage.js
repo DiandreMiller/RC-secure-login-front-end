@@ -1,10 +1,10 @@
-import LoginAndSignUp from "../Components/LoginAndSignUp";
+import LoginAndSignUpComponent from "../Components/LoginAndSignUpComponent";
 
 const LoginAndSignUpPage = () => {
 
     return (
         <div>
-            <LoginAndSignUp />
+            <LoginAndSignUpComponent />
         </div>
     );
 

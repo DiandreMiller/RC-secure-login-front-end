@@ -3,8 +3,10 @@ import DOMPurify from 'dompurify'; // To prevent XSS attacks
 import { useFormik } from 'formik';
 import validationSchema from '../Validations/validationSchema';
 
+import axios from 'axios';
 
-const LoginAndSignUp = () => {
+
+const LoginAndSignUpComponent = () => {
   const [isLogin, setIsLogin] = useState(true);
 
   const handleToggle = () => {
@@ -29,10 +31,26 @@ const LoginAndSignUp = () => {
         console.log('Sanitized Email:', email);
         console.log('Sanitized Password:', password);
 
-        if(!isLogin){
-            console.log('Sanitized Username:', username);
-            console.log('Sanitized Date of Birth:', dateOfBirth);
+        const userData = {
+            username,
+            email,
+            password,
+            dateOfBirth,
+        };
+
+        try {
+          if(!isLogin){
+              const newUserResponse = axios.post(`${process.env.REACT_APP_BACKEND_API}/api/login`, {email, password});
+              console.log('User response:', newUserResponse.data);
+          } else {
+              const existingUserResponse = axios.post(`${process.env.REACT_APP_BACKEND_API}/api/signup`, userData);
+              console.log('New user response:', existingUserResponse.data);
+          }
+
+        } catch (error) {
+            console.error('Error submitting data:', error);
         }
+
     }
   })
 
@@ -104,7 +122,7 @@ return (
   
           {isLogin && (
             <div className="mb-4">
-              <a href="#" className="text-blue-400 hover:underline text-sm">
+              <a href="/forgot-password" className="text-blue-400 hover:underline text-sm">
                 Forgot Password?
               </a>
             </div>
@@ -137,4 +155,4 @@ return (
   
 };
 
-export default LoginAndSignUp;
+export default LoginAndSignUpComponent;

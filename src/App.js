@@ -6,7 +6,13 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 //Pages
 import HomePage from './Pages/HomePage';
 import AboutPage from './Pages/AboutPage';
+import MoviesPage from './Pages/MoviesPage';
+
+//Commons
 import Navbar from './Common/Navbar';
+import Footer from './Common/Footer';
+import FourOFourPage from './Pages/FourOFourPage';
+
 
 function App() {
 
@@ -23,7 +29,10 @@ function App() {
         <Routes>
           <Route element={<HomePage />} path='/' />
           <Route element={<AboutPage />} path='/about' />
+          <Route element={<MoviesPage />} path='/movies' />
+          <Route element={<FourOFourPage />} path='*' />
         </Routes>
+        <Footer />
       </BrowserRouter>
     </div>
   );

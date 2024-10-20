@@ -12,6 +12,7 @@ import MoviesPage from './Pages/MoviesPage';
 import Navbar from './Common/Navbar';
 import Footer from './Common/Footer';
 import FourOFourPage from './Pages/FourOFourPage';
+import LoginAndSignUpPage from './Pages/LoginAndSignUpPage';
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
         <Routes>
           <Route element={<HomePage />} path='/' />
           <Route element={<AboutPage />} path='/about' />
+          <Route element={<LoginAndSignUpPage />} path='/login-signup' />
           <Route element={<MoviesPage />} path='/movies' />
           <Route element={<FourOFourPage />} path='*' />
         </Routes>

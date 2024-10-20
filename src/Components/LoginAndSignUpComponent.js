@@ -40,10 +40,10 @@ const LoginAndSignUpComponent = () => {
 
         try {
           if(!isLogin){
-              const newUserResponse = axios.post(`${process.env.REACT_APP_BACKEND_API}/api/login`, {email, password});
+              const newUserResponse = axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-in`, {email, password});
               console.log('User response:', newUserResponse.data);
           } else {
-              const existingUserResponse = axios.post(`${process.env.REACT_APP_BACKEND_API}/api/signup`, userData);
+              const existingUserResponse = axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-up`, userData);
               console.log('New user response:', existingUserResponse.data);
           }
 

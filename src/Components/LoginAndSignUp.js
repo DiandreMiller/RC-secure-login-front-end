@@ -36,22 +36,6 @@ const LoginAndSignUp = () => {
     }
   })
 
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     const email = DOMPurify.sanitize(e.target.email.value);
-//     const password = DOMPurify.sanitize(e.target.password.value);
-    
-//     // If signing up, get the username and date of birth
-//     const username = isLogin ? null : DOMPurify.sanitize(e.target.username.value);
-//     const dateOfBirth = isLogin ? null : DOMPurify.sanitize(e.target.dateOfBirth.value);
-
-//     console.log('Sanitized Email:', email);
-//     console.log('Sanitized Password:', password);
-//     if (!isLogin) {
-//       console.log('Sanitized Username:', username);
-//       console.log('Sanitized Date of Birth:', dateOfBirth);
-//     }
-//   };
 
 return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">

@@ -1,6 +1,8 @@
 //Toggle between login and sign up form
+//Must do a forgot password.
 
 import { useState } from 'react';
+import DOMPurify from 'dompurify'; //Prevent XSS attacks (Cross-Site Scripting Malicious Script Attacks)
 
 const LoginAndSignUp = () => {
 
@@ -10,25 +12,36 @@ const LoginAndSignUp = () => {
     setIsLogin(!isLogin); 
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const email = DOMPurify.sanitize(e.target.email.value);
+    const password = DOMPurify.sanitize(e.target.password.value);
+
+    console.log(' Sanitized Email:', email);
+    console.log('Sanitized Password:', password);
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="bg-gray-100 p-8 rounded-lg shadow-md">
         {isLogin ? (
           <div>
             <h2 className="text-2xl font-bold mb-4">Login</h2>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-gray-700">Email:</label>
-                <input
+                <input required
                   type="email"
+                  name='email'
                   className="border rounded p-2 w-full"
                   placeholder="Enter your email"
                 />
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700">Password:</label>
-                <input
+                <input required
                   type="password"
+                  name='password'
                   className="border rounded p-2 w-full"
                   placeholder="Enter your password"
                 />
@@ -47,11 +60,12 @@ const LoginAndSignUp = () => {
         ) : (
           <div>
             <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-gray-700">Email:</label>
                 <input
                   type="email"
+                  name='email'
                   className="border rounded p-2 w-full"
                   placeholder="Enter your email"
                 />
@@ -60,6 +74,7 @@ const LoginAndSignUp = () => {
                 <label className="block text-gray-700">Password:</label>
                 <input
                   type="password"
+                  name='password'
                   className="border rounded p-2 w-full"
                   placeholder="Enter your password"
                 />

@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 
-export const validationSchema = Yup.object().shape({
+const validationSchema = Yup.object().shape({
 
     username: Yup.string().when('isLogin', {
         is: true,
@@ -16,3 +16,5 @@ export const validationSchema = Yup.object().shape({
         then: Yup.date().required('Date of Birth is required').nullable(),
     })
 })
+
+export default validationSchema;

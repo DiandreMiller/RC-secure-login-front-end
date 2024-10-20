@@ -21,7 +21,7 @@ const LoginAndSignUpComponent = () => {
         dateOfBirth: '',
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
         //Sanitize inputs with dompurify
         const username = isLogin ? null : DOMPurify.sanitize(values.username);
         const email = DOMPurify.sanitize(values.email);
@@ -38,12 +38,14 @@ const LoginAndSignUpComponent = () => {
             dateOfBirth,
         };
 
+        console.log("Payload being sent:", userData);
+
         try {
           if(!isLogin){
-              const newUserResponse = axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-in`, {email, password});
+              const newUserResponse = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-up`, userData);
               console.log('User response:', newUserResponse.data);
           } else {
-              const existingUserResponse = axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-up`, userData);
+              const existingUserResponse = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-in`, {email, password});
               console.log('New user response:', existingUserResponse.data);
           }
 

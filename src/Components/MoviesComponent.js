@@ -8,20 +8,18 @@ const MoviesComponent = () => {
 
     const BACKENDURL = process.env.REACT_APP_BACKEND_API;
 
-    const getMovies = async () => {
-        try {
-            const response = await axios.get(`${BACKENDURL}/movies`);
-            setMovies(response.data);
-            setLoading(false);
-        } catch (error) {
-            console.error('Error fetching data: ', error);
-        }
-    }
-
     useEffect(() => {
+        const getMovies = async () => {
+            try {
+                const response = await axios.get(`${BACKENDURL}/movies`);
+                setMovies(response.data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching data: ', error);
+            }
+        };
         getMovies();
-    }
-    , []);
+    }, [BACKENDURL]);
 
   return (
       <div>

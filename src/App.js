@@ -2,6 +2,8 @@ import './App.css';
 // import axios from 'axios';
 // import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './authenthication/AuthContext';
+import ProtectedRoute from './authenthication/ProtectedRoute';
 
 //Commons
 import Navbar from './Common/Navbar';
@@ -25,6 +27,7 @@ function App() {
 
   return (
 
+  <AuthProvider>
     <div>
       <BrowserRouter>
          <Navbar />
@@ -33,12 +36,13 @@ function App() {
           <Route element={<AboutPage />} path='/about' />
           <Route element={<ForgotPasswordPage />} path='/forgot-password' />
           <Route element={<LoginAndSignUpPage />} path='/login-signup' />
-          <Route element={<MoviesPage />} path='/movies' />
+          <Route element={<ProtectedRoute><MoviesPage /></ProtectedRoute>} path='/movies' />
           <Route element={<FourOFourPage />} path='*' />
         </Routes>
         <Footer />
       </BrowserRouter>
     </div>
+  </AuthProvider>
   );
 }
 

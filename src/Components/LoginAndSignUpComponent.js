@@ -2,12 +2,16 @@ import { useState } from 'react';
 import DOMPurify from 'dompurify'; // To prevent XSS attacks
 import { useFormik } from 'formik';
 import validationSchema from '../Validations/validationSchema';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../authenthication/AuthContext';
 
 import axios from 'axios';
 
 
 const LoginAndSignUpComponent = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleToggle = () => {
     setIsLogin(!isLogin);
@@ -42,6 +46,11 @@ const LoginAndSignUpComponent = () => {
           } else {
               const existingUserResponse = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-in`, {email, password});
               console.log('New user response:', existingUserResponse.data);
+              // Set token in localStorage
+              localStorage.setItem('token', existingUserResponse.data.token);
+              // Update context state
+              login(existingUserResponse.data.token);
+              navigate('/movies');
           }
 
         } catch (error) {

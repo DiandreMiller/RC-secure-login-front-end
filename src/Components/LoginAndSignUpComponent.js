@@ -28,17 +28,12 @@ const LoginAndSignUpComponent = () => {
         const password = DOMPurify.sanitize(values.password);
         const dateOfBirth = isLogin ? null : DOMPurify.sanitize(values.dateOfBirth);
 
-        console.log('Sanitized Email:', email);
-        console.log('Sanitized Password:', password);
-
         const userData = {
             username,
             email,
             password,
             dateOfBirth,
         };
-
-        console.log("Payload being sent:", userData);
 
         try {
           if(!isLogin){

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import DOMPurify from 'dompurify'; // To prevent XSS attacks
 import { useFormik } from 'formik';
 import validationSchema from '../Validations/validationSchema';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../authenthication/AuthContext';
 
 import axios from 'axios';
@@ -128,9 +128,9 @@ return (
   
           {isLogin && (
             <div className="mb-4">
-              <a href="/forgot-password" className="text-blue-400 hover:underline text-sm">
+              <Link to="/forgot-password" className="text-blue-400 hover:underline text-sm"> 
                 Forgot Password?
-              </a>
+              </Link>
             </div>
           )}
   

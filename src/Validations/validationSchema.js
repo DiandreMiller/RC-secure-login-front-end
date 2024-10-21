@@ -1,5 +1,7 @@
 import * as Yup from 'yup';
 
+const specialCharacters = /[!@#$%^&*(),.?":{}|<>]/;
+
 const validationSchema = Yup.object().shape({
 
     username: Yup.string().when('isLogin', {
@@ -10,6 +12,7 @@ const validationSchema = Yup.object().shape({
     password: Yup.string()
         .min(8, 'Password must be at least 8 characters')
         .max(32, 'Password must be at most 32 characters')
+        .matches(specialCharacters, 'Password must contain at least one special character')
         .required('Password is required'),
     dateOfBirth: Yup.date().when('isLogin',{
         is: false, 

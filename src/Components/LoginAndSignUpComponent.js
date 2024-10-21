@@ -10,7 +10,7 @@ import axios from 'axios';
 
 //Passkey vs MFA
 
-//ToDo: Show user error if credientials are incorrect
+//ToDo: Take user to login page after sign up
 
 const LoginAndSignUpComponent = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -49,6 +49,7 @@ const LoginAndSignUpComponent = () => {
         try {
           if(!isLogin){
               const newUserResponse = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-up`, userData);
+              navigate('/movies');
               console.log('User response:', newUserResponse.data);
           } else {
               const existingUserResponse = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-in`, {email, password});

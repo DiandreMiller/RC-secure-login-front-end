@@ -10,8 +10,13 @@ import axios from 'axios';
 
 //Passkey vs MFA
 
+//ToDo: Show user error if credientials are incorrect
+
 const LoginAndSignUpComponent = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [error, setError] = useState('');
+
+
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -62,6 +67,7 @@ const LoginAndSignUpComponent = () => {
 
         } catch (error) {
             console.error('Error submitting data:', error);
+            setError('Invalid Credentials. Please try again.');
         }
 
     }
@@ -74,7 +80,8 @@ return (
         <h2 className="text-3xl font-bold mb-6 text-center">
           {isLogin ? 'Login' : 'Sign Up'}
         </h2>
-  
+
+        {error && <p className="text-red-500 mb-4">{error}</p>}
         <form onSubmit={formik.handleSubmit}>
           {!isLogin && (
             <div className="mb-4">

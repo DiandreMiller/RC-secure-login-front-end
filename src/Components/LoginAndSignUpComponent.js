@@ -30,6 +30,7 @@ const LoginAndSignUpComponent = () => {
         email: '',
         password: '',
         dateOfBirth: '',
+        phoneNumber: '',
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -38,12 +39,14 @@ const LoginAndSignUpComponent = () => {
         const email = DOMPurify.sanitize(values.email);
         const password = DOMPurify.sanitize(values.password);
         const dateOfBirth = isLogin ? null : DOMPurify.sanitize(values.dateOfBirth);
+        const phoneNumber = isLogin ? null : DOMPurify.sanitize(values.phoneNumber);
 
         const userData = {
             username,
             email,
             password,
             dateOfBirth,
+            phoneNumber,
         };
 
         try {
@@ -112,6 +115,22 @@ return (
             />
             {formik.errors.email && <p className="text-red-500">{formik.errors.email}</p>}
           </div>
+          {!isLogin && (
+          <div className="mb-4">
+            <label className="block text-gray-300 mb-2">Phone Number:</label>
+            <input
+              required
+              type="text"
+              name="phoneNumber" 
+              onChange={formik.handleChange}
+              value={formik.values.phoneNumber}
+              className="border border-gray-600 rounded p-3 w-full bg-gray-700 text-white"
+              placeholder="Enter your phone number"
+            />
+            {formik.errors.phoneNumber && <p className="text-red-500">{formik.errors.phoneNumber}</p>}
+        </div>
+    )}
+
           <div className="mb-4">
             <label className="block text-gray-300 mb-2">Password:</label>
             <input

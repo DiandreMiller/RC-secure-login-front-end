@@ -4,9 +4,11 @@ import { useFormik } from 'formik';
 import validationSchema from '../Validations/validationSchema';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../authenthication/AuthContext';
+import Cookies from 'js-cookie';
 
 import axios from 'axios';
 
+//Passkey vs MFA
 
 const LoginAndSignUpComponent = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -46,10 +48,15 @@ const LoginAndSignUpComponent = () => {
           } else {
               const existingUserResponse = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-in`, {email, password});
               console.log('New user response:', existingUserResponse.data);
-              // Set token in localStorage
-              localStorage.setItem('token', existingUserResponse.data.token);
-              // Update context state
-              login(existingUserResponse.data.token);
+              
+              //Store token in cookies
+              const { token, expiresIn } = existingUserResponse.data;
+
+              //Expiration date
+              const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+              Cookies.set('token', token, { expires: expirationDate, secure: true, sameSite: 'strict' });
+
+              login(token);
               navigate('/movies');
           }
 

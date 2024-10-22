@@ -34,47 +34,54 @@ const LoginAndSignUpComponent = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
-        //Sanitize inputs with dompurify
-        const username = isLogin ? null : DOMPurify.sanitize(values.username);
-        const email = DOMPurify.sanitize(values.email);
-        const password = DOMPurify.sanitize(values.password);
-        const dateOfBirth = isLogin ? null : DOMPurify.sanitize(values.dateOfBirth);
-        const phoneNumber = isLogin ? null : DOMPurify.sanitize(values.phoneNumber);
-
-        const userData = {
-            username,
-            email,
-            password,
-            dateOfBirth,
-            phoneNumber,
-        };
-
-        try {
-          if(!isLogin){
+      // Sanitize inputs with dompurify
+      const username = isLogin ? null : DOMPurify.sanitize(values.username);
+      const email = DOMPurify.sanitize(values.email);
+      const password = DOMPurify.sanitize(values.password);
+      const dateOfBirth = isLogin ? null : DOMPurify.sanitize(values.dateOfBirth);
+      const phoneNumber = isLogin ? null : DOMPurify.sanitize(values.phoneNumber);
+  
+      const userData = {
+          username,
+          email,
+          password,
+          dateOfBirth,
+          phoneNumber,
+      };
+  
+      console.log('userData:', userData);
+  
+      try {
+          if (!isLogin) {
               const newUserResponse = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-up`, userData);
               navigate('/movies');
               console.log('User response:', newUserResponse.data);
           } else {
-              const existingUserResponse = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-in`, {email, password});
+              const existingUserResponse = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-in`, { email, password });
               console.log('New user response:', existingUserResponse.data);
-              
-              //Store token in cookies
+  
+              // Store token in cookies
               const { token, expiresIn } = existingUserResponse.data;
-
-              //Expiration date
+  
+              // Expiration date
               const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
               Cookies.set('token', token, { expires: expirationDate, secure: true, sameSite: 'strict' });
-
+  
               login(token);
               navigate('/movies');
           }
-
-        } catch (error) {
-            console.error('Error submitting data:', error);
-            setError('Invalid Credentials. Please try again.');
-        }
-
-    }
+  
+      } catch (error) {
+          console.error('Error submitting data:', error);
+          // Set error to the specific error message from the backend
+          if (error.response && error.response.data.error) {
+              setError(error.response.data.error); // Display the backend error message
+          } else {
+              setError('Invalid Credentials. Please try again.');
+          }
+      }
+  }
+  
   })
 
 

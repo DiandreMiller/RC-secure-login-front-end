@@ -41,6 +41,7 @@ function App() {
           <Route element={<LearnMorePage />} path='/learn-more' />
           <Route element={<LoginAndSignUpPage />} path='/login-signup' />
           <Route element={<ProtectedRoute><MoviesPage /></ProtectedRoute>} path='/movies' />
+          {/* <Route element={<MoviesPage />} path='/movies' /> */}
           <Route element={<FourOFourPage />} path='*' />
         </Routes>
         <Footer />

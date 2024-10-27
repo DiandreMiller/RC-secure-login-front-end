@@ -21,10 +21,12 @@ const HomeComponent = () => {
         </section>
 
         <section className="mb-16 flex space-x-4">
-          <button className="bg-red-500 hover:bg-red-600 text-white text-lg py-3 px-8 rounded-full transition-all duration-300 w-40">
-            Learn More
-          </button>
 
+          <Link to='/learn-more'>
+            <button className="bg-red-500 hover:bg-red-600 text-white text-lg py-3 px-8 rounded-full transition-all duration-300 w-40">
+              Learn More
+            </button>
+          </Link>
           <Link to='/login-signup'>
             <button className="bg-blue-500 hover:bg-blue-600 text-white text-lg py-3 px-8 rounded-full transition-all duration-300 w-40">
                 Login

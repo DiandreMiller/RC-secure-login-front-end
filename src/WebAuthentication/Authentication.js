@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { client } from '@passwordless-id/webauthn';
 import axios from 'axios';  
+import { useAuth } from '../authenthication/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Authentication = () => {
   const [username, setUsername] = useState('');
   const [message, setMessage] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleAuthentication = async (e) => {
     e.preventDefault();
@@ -31,6 +35,16 @@ const Authentication = () => {
       });
 
       const result = verificationResponse.data;
+
+      if(result.success) {
+        login(result.token);
+        setMessage('Authentication successful');
+        navigate('/register-passkey');
+      } else {
+        setMessage('Authentication failed');
+      }
+
+
       setMessage('Authentication successful: ' + JSON.stringify(result));
     } catch (error) {
       setMessage('Authentication failed: ' + error.message);

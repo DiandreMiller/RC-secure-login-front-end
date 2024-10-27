@@ -13,6 +13,7 @@ const LoginAndSignUpComponent = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -28,17 +29,15 @@ const LoginAndSignUpComponent = () => {
   const signUpUser = async (userData) => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-up`, userData);
-      // console.log('Sign-up response:', response.data);
       return response.data; 
     } catch (error) {
-      // console.error('Error during sign-up:', error);
       throw error; 
     }
   };
 
-  const loginUser = async (identifier, password) => {
+  const loginUser = async (userData) => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-in`, { identifier, password });
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-in`, userData);
       console.log('Login response:', response.data);
       return response.data; 
     } catch (error) {
@@ -49,7 +48,6 @@ const LoginAndSignUpComponent = () => {
 
   const formik = useFormik({
     initialValues: {
-      identifier: '',
       username: '',
       email: '',
       password: '',
@@ -59,84 +57,100 @@ const LoginAndSignUpComponent = () => {
 
     validationSchema,
     onSubmit: async (values) => {
-      const username = isLogin ? null : DOMPurify.sanitize(values.username);
-      const email = DOMPurify.sanitize(values.email);
-      const password = values.password;
-      const dateOfBirth = isLogin ? null : DOMPurify.sanitize(values.dateOfBirth);
-      const phoneNumber = isLogin ? null : DOMPurify.sanitize(values.phoneNumber);
-  
-      console.log('Formik values before submission:', formik.values);
-  
-      const userData = {
-          username, 
-          identifier: isLogin ? email : username,
-          email,
-          password,
-          dateOfBirth,
-          phoneNumber,
-          webauthnid: '',
-          webauthnpublickey: ''
-      };
-  
-      console.log('userData:', userData);
       try {
-          if (!isLogin) {
-              // Sign up logic
-              // console.log('Sending sign-up request with:', userData);
-              const newUserResponse = await signUpUser(userData); 
-              // console.log('signUpUser response:', newUserResponse);
-              const { webauthnid, webauthnpublickey } = await registerPasskey(newUserResponse.user.id, userData.identifier); 
-              userData.webauthnid = webauthnid;
-              userData.webauthnpublickey = webauthnpublickey;
-              // console.log('Updated userData:', userData);
-              navigate('/movies');
-          } else {
-              // Login logic
-              console.log('Sending login request with identifier:', userData.identifier);
-              const loginResponse = await loginUser(userData.identifier, password); 
-              console.log('Login response:', loginResponse);
+        const sanitizedValues = {
+          username: isLogin ? null : DOMPurify.sanitize(values.username),
+          email: DOMPurify.sanitize(values.email),
+          password: values.password,
+          dateOfBirth: isLogin ? null : DOMPurify.sanitize(values.dateOfBirth),
+          phoneNumber: isLogin ? null : DOMPurify.sanitize(values.phoneNumber),
+          // identifier: isLogin ? DOMPurify.sanitize(values.identifier) : undefined,
+          
+          
+          };
+
+          if(isLogin) {
+            if (!sanitizedValues.identifier && sanitizedValues.email) {
+              sanitizedValues.identifier = sanitizedValues.email;
+              console.log('Email copied to identifier:', sanitizedValues.identifier);
+            }
+
+        }
+        
+
+          const userData = isLogin
+    ? {
+        identifier: sanitizedValues.email || sanitizedValues.username || sanitizedValues.phoneNumber,
+        password: sanitizedValues.password,
+      }
+    : {
+        email: sanitizedValues.email,
+        password: sanitizedValues.password,
+        username: sanitizedValues.username,
+        dateOfBirth: sanitizedValues.dateOfBirth,
+        phoneNumber: sanitizedValues.phoneNumber,
+    };
   
-              // Successful login 
-              const { token, expiresIn } = loginResponse;
+          console.log('userData before login:', userData);
+  
+          let response;
+
+          if(isLogin) {
+            response = await loginUser(userData);
+          } else {
+            response = await signUpUser(sanitizedValues);
+            navigate('/movies');
+            return;
+          }
+  
+          // Log the full response
+          console.log('Login response:', response);
+  
+          const { token, expiresIn, hasRegisteredPasskey } = response; 
+  
+          // If the login is successful and you have a token
+          if (token) {
+              if (!expiresIn) {
+                  console.error('Token expiration not found in login response. Cannot set token.');
+                  throw new Error('Token expiration not found in login response. Cannot set token.');
+              }
+  
               const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
               console.log('Expiration date:', expirationDate);
               Cookies.set('token', token, { expires: expirationDate, secure: true, sameSite: 'strict' });
               console.log('Token:', token);
-              login(token);
-              navigate('/movies');
+              login(token); 
+  
+              // Check if user has registered a passkey
+              if (!hasRegisteredPasskey && sanitizedValues.email) {
+                  try {
+                      await registerPasskey(sanitizedValues.identifier, sanitizedValues.email); 
+                  } catch (registerError) {
+                      console.error('Error registering passkey:', registerError);
+                      setError(registerError.response?.data?.error || 'Failed to register passkey. Please try again.');
+                  }
+              }
+  
+              navigate('/movies'); 
           }
       } catch (error) {
           console.error('Error submitting data:', error);
           setError(error.response?.data?.error || 'Invalid Credentials. Please try again.');
       }
-    }
+  },
+  
+  
   });
 
   const registerPasskey = async (userId, email) => {
-    // console.log('Registering passkey for user ID:', userId);
-    // console.log('Registering passkey for email:', email);
-    
-    // Call to backend to initiate passkey registration
-    const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/register-passkey`, { userId });
-    // console.log('Public Key Credential Creation Options:', response.data);
+    console.log('Registering passkey with userId:', userId, 'and email:', email);
+    const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/register-passkey`, { userId, email });
     const publicKeyCredentialCreationOptions = response.data;
 
-    // Log the response from the server
-    // console.log('Public Key Credential Creation Options:', publicKeyCredentialCreationOptions);
-
-    // Convert the challenge from base64 to ArrayBuffer
     const challengeBuffer = base64ToArrayBuffer(publicKeyCredentialCreationOptions.challenge);
-    const testWithoutBase64 = publicKeyCredentialCreationOptions.challenge;
-    console.log('Test buffer:', testWithoutBase64);
-    console.log('Converted challenge buffer front End:', challengeBuffer);
     publicKeyCredentialCreationOptions.challenge = challengeBuffer;
-    // console.log('Challenge buffer:', challengeBuffer);
-
-    // Update the user ID to be an ArrayBuffer
     publicKeyCredentialCreationOptions.user.id = new TextEncoder().encode(userId); 
-    // console.log('User ID buffer:', publicKeyCredentialCreationOptions.user.id);
 
-    // Use WebAuthn API to create a passkey
     let credential;
     try {
         credential = await navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions });
@@ -146,16 +160,9 @@ const LoginAndSignUpComponent = () => {
         throw error; 
     }
 
-    // Extracting the webauthnid and webauthnpublickey
     const webauthnid = credential.id; 
     const webauthnpublickey = credential.rawId; 
-    
 
-    // Log the webauthnid and webauthnpublickey
-    console.log('Generated webauthnid:', webauthnid);
-    console.log('Generated webauthnpublickey:', webauthnpublickey);
-
-    // Send the created credential back to your server for verification
     await axios.post(`${process.env.REACT_APP_BACKEND_API}/verify-passkey`, {
         credential,
         email,
@@ -164,51 +171,40 @@ const LoginAndSignUpComponent = () => {
         webauthnpublickey
     });
 
-    console.log('Final Public Key Credential Creation Options before WebAuthn:', response.data);
-
     return { webauthnid, webauthnpublickey };
   };
 
   const authenticateWithPasskey = async (identifier, password) => {
     console.log('Initiating passkey authentication for user input:',identifier); 
-    // console.log('Password 1:', password);
 
     try {
-
-        const payload = { identifier, password };
+        const payload = { identifier, password, username: formik.values.username, email: formik.values.email };
         console.log('Payload:', payload);
-        // console.log('password 2:', password);
-        console.log('Identifier being sent:', identifier);
+        const userIdentifier = identifier || (isLogin ? (formik.values.email || formik.values.username) : '');
 
-
-        const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/authenticate-passkey`, { identifier });
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/authenticate-passkey`, { identifier: userIdentifier });
         const publicKeyCredentialRequestOptions = response.data;
-        console.log('Public Key Credential Request Options:', publicKeyCredentialRequestOptions); // Log the options received
+        console.log('Public Key Credential Request Options:', publicKeyCredentialRequestOptions);
 
         const credential = await navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions });
-        console.log('Created credential:', credential); // Log the credential created
+        console.log('Created credential:', credential); 
 
-        // Extract the necessary data
         const webauthnid = credential.id;
         const webauthnpublickey = credential.rawId;
 
-        console.log('WebAuthn ID:', webauthnid); // Log WebAuthn ID
-        console.log('WebAuthn Public Key:', webauthnpublickey); // Log WebAuthn public key
-
         const existingUserResponse = await axios.post(`${process.env.REACT_APP_BACKEND_API}/verify-passkey`, {
             credential,
-            identifier,
+            identifier: userIdentifier,
             password,
             userId: publicKeyCredentialRequestOptions.user.id,
             webauthnid, 
             webauthnpublickey 
         });
 
-        console.log('Verification Response:', existingUserResponse.data); // Log the verification response
+        console.log('Verification Response:', existingUserResponse.data); 
 
-        // Handle successful login
         const { token, expiresIn } = existingUserResponse.data;
-        console.log('Received token:', token); // Log the token
+        console.log('Received token:', token); 
         const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
         console.log('Token expiration date:', expirationDate); 
 
@@ -218,17 +214,20 @@ const LoginAndSignUpComponent = () => {
     } catch (error) {
         console.error('Error during authentication:', error); 
     }
-};
-
+  };
 
   const handlePasskeyLogin = async () => {
+    setLoading(true);
     try {
         await authenticateWithPasskey(formik.values.identifier, formik.values.password);
     } catch (error) {
         console.error('Error during passkey login:', error);
         setError(error.response?.data?.error || 'Failed to authenticate with passkey. Please try again.');
+    } finally {
+      setLoading(false);
     }
-};
+  };
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">

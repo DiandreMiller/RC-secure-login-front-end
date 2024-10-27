@@ -17,6 +17,7 @@ import FourOFourPage from './Pages/FourOFourPage';
 import LoginAndSignUpPage from './Pages/LoginAndSignUpPage';
 import ForgotPasswordPage from './Pages/ForgotPasswordPage';
 import LearnMorePage from './Pages/LearnMorePage';
+import RegisterPasskey from './Pages/RegisterPasskeyPage';
 
 
 
@@ -40,6 +41,7 @@ function App() {
           <Route element={<ForgotPasswordPage />} path='/forgot-password' />
           <Route element={<LearnMorePage />} path='/learn-more' />
           <Route element={<LoginAndSignUpPage />} path='/login-signup' />
+          <Route element={<RegisterPasskey />} path='/register-passkey' />
           <Route element={<ProtectedRoute><MoviesPage /></ProtectedRoute>} path='/movies' />
           {/* <Route element={<MoviesPage />} path='/movies' /> */}
           <Route element={<FourOFourPage />} path='*' />

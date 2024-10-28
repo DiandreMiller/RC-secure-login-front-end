@@ -71,26 +71,6 @@ const loginUser = async (userData) => {
 };
 
 
-// const loginUser = async (userData) => {
-//   try {
-//     const response = await axios.post(`${backEndUrl}/sign-in`, userData);
-
-//     // Check if the response indicates success
-//     if (response.data && response.data.message === "Sign in is a success") {
-//       return {
-//         token: response.data.token,
-//         userId: response.data.id, 
-//         expiresIn: response.data.expiresIn
-//       };
-//     } else {
-//       throw new Error("Login failed. Please try again."); 
-//     }
-//   } catch (error) {
-//     console.error('Error during login:', error);
-//     throw error.response?.data?.message || error.message; 
-//   }
-// };
-
   const registerPasskey = async (userId, email) => {
     // console.log('Registering passkey with userId:', userId, 'and email:', email);
 

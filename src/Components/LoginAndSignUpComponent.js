@@ -9,6 +9,7 @@ const LoginAndSignUpComponent = ({ formik, registerPasskey, signUpUser, loginUse
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();

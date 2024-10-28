@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+
+
 import './App.css';
 import axios from 'axios';
 import { useState } from 'react';
@@ -36,6 +39,7 @@ const AppContent = () => {
   const signUpUser = async (userData) => {
     try {
       const response = await axios.post(`${backEndUrl}/sign-up`, userData);
+      console.log('Sign-up response:', response.data);
       
       if (response.data && response.data.message === "User created") {
         return response.data.user; 
@@ -53,7 +57,7 @@ const loginUser = async (userData) => {
   try {
     const response = await axios.post(`${backEndUrl}/sign-in`, userData);
     if (response.data && response.data.message === "Sign in is a success") {
-      // console.log('Login response App.js:', response.data);
+      console.log('Login response App.js:', response.data);
       return {
         token: response.data.token,
         userId: response.data.user.id,
@@ -71,28 +75,8 @@ const loginUser = async (userData) => {
 };
 
 
-// const loginUser = async (userData) => {
-//   try {
-//     const response = await axios.post(`${backEndUrl}/sign-in`, userData);
-
-//     // Check if the response indicates success
-//     if (response.data && response.data.message === "Sign in is a success") {
-//       return {
-//         token: response.data.token,
-//         userId: response.data.id, 
-//         expiresIn: response.data.expiresIn
-//       };
-//     } else {
-//       throw new Error("Login failed. Please try again."); 
-//     }
-//   } catch (error) {
-//     console.error('Error during login:', error);
-//     throw error.response?.data?.message || error.message; 
-//   }
-// };
-
   const registerPasskey = async (userId, email) => {
-    // console.log('Registering passkey with userId:', userId, 'and email:', email);
+    console.log('Registering passkey with userId:', userId, 'and email:', email);
 
     if (!userId || !email) {
       console.error('User ID or Email is undefined!');
@@ -108,7 +92,7 @@ const loginUser = async (userData) => {
     let credential;
     try {
       credential = await navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions });
-      // console.log('Created credential:', credential);
+      console.log('Created credential:', credential);
     } catch (error) {
       console.error('Error during credential creation:', error);
       throw error;
@@ -150,7 +134,7 @@ const loginUser = async (userData) => {
         if (isLogin) {
           if (!sanitizedValues.identifier && sanitizedValues.email) {
             sanitizedValues.identifier = sanitizedValues.email;
-            // console.log('Email copied to identifier:', sanitizedValues.identifier);
+            console.log('Email copied to identifier:', sanitizedValues.identifier);
           }
         }
 
@@ -167,7 +151,7 @@ const loginUser = async (userData) => {
               phoneNumber: sanitizedValues.phoneNumber,
             };
 
-        // console.log('userData before login:', userData);
+        console.log('userData before login:', userData);
 
         let response;
 
@@ -179,7 +163,7 @@ const loginUser = async (userData) => {
           return;
         }
 
-        // console.log('Login response:', response);
+        console.log('Login response:', response);
 
         const { token, expiresIn, hasRegisteredPasskey } = response;
 
@@ -190,9 +174,9 @@ const loginUser = async (userData) => {
           }
 
           const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
-          // console.log('Expiration date:', expirationDate);
+          console.log('Expiration date:', expirationDate);
           Cookies.set('token', token, { expires: expirationDate, secure: true, sameSite: 'strict' });
-          // console.log('Token:', token);
+          console.log('Token:', token);
           login(token);
 
           if (!hasRegisteredPasskey) {

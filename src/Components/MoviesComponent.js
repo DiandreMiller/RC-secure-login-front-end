@@ -13,7 +13,7 @@ const MoviesComponent = () => {
         const response = await axios.get(`${BACKENDURL}/movies`);
         const moviesData = response.data;
 
-        if (moviesData.length > 0) {
+        if (moviesData.length) {
           moviesData.pop();
         }
 

@@ -2,13 +2,12 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../authenthication/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-const Navbar = () => {
-  const { logout } = useAuth(); 
-  const navigate = useNavigate();
+const Navbar = ({ onLogOut }) => {
+  // const { logout, reset } = useAuth(); 
+  // const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout(); 
-    navigate('/');
+    onLogOut();
   };
 
   return (

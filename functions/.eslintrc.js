@@ -11,9 +11,9 @@ module.exports = {
     "google",
   ],
   rules: {
-    "no-restricted-globals": ["warn", "name", "length"],
-    "prefer-arrow-callback": "warn",
-    "quotes": ["warn", "double", {"allowTemplateLiterals": true}],
+    "no-restricted-globals": ["off", "name", "length"],
+    "prefer-arrow-callback": "off",
+    "quotes": ["off", "double", {"allowTemplateLiterals": true}],
     "no-unused-vars": "off",
   },
   overrides: [

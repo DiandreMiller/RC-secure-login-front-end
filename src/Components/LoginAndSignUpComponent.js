@@ -1,15 +1,11 @@
 import { useState } from 'react';
-import DOMPurify from 'dompurify';
-import { useFormik } from 'formik';
-import validationSchema from '../Validations/validationSchema';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../authenthication/AuthContext';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
-import { base64ToArrayBuffer } from '../utils/arrayBufferUtils';
 
-const LoginAndSignUpComponent = () => {
+const LoginAndSignUpComponent = ({ formik, registerPasskey, signUpUser, loginUser }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -26,168 +22,21 @@ const LoginAndSignUpComponent = () => {
     setShowPassword(!showPassword);
   };
 
-  const signUpUser = async (userData) => {
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-up`, userData);
-      return response.data; 
-    } catch (error) {
-      throw error; 
-    }
-  };
-
-  const loginUser = async (userData) => {
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/sign-in`, userData);
-      console.log('Login response:', response.data);
-      return response.data; 
-    } catch (error) {
-      console.error('Error during login:', error);
-      throw error; 
-    }
-  };
-
-  const formik = useFormik({
-    initialValues: {
-      username: '',
-      email: '',
-      password: '',
-      dateOfBirth: '',
-      phoneNumber: '',
-    },
-
-    validationSchema,
-    onSubmit: async (values) => {
-      try {
-        const sanitizedValues = {
-          username: isLogin ? null : DOMPurify.sanitize(values.username),
-          email: DOMPurify.sanitize(values.email),
-          password: values.password,
-          dateOfBirth: isLogin ? null : DOMPurify.sanitize(values.dateOfBirth),
-          phoneNumber: isLogin ? null : DOMPurify.sanitize(values.phoneNumber),
-          // identifier: isLogin ? DOMPurify.sanitize(values.identifier) : undefined,
-          
-          
-          };
-
-          if(isLogin) {
-            if (!sanitizedValues.identifier && sanitizedValues.email) {
-              sanitizedValues.identifier = sanitizedValues.email;
-              console.log('Email copied to identifier:', sanitizedValues.identifier);
-            }
-
-        }
-        
-
-          const userData = isLogin
-    ? {
-        identifier: sanitizedValues.email || sanitizedValues.username || sanitizedValues.phoneNumber,
-        password: sanitizedValues.password,
-      }
-    : {
-        email: sanitizedValues.email,
-        password: sanitizedValues.password,
-        username: sanitizedValues.username,
-        dateOfBirth: sanitizedValues.dateOfBirth,
-        phoneNumber: sanitizedValues.phoneNumber,
-    };
-  
-          console.log('userData before login:', userData);
-  
-          let response;
-
-          if(isLogin) {
-            response = await loginUser(userData);
-          } else {
-            response = await signUpUser(sanitizedValues);
-            navigate('/movies');
-            return;
-          }
-  
-          // Log the full response
-          console.log('Login response:', response);
-  
-          const { token, expiresIn, hasRegisteredPasskey } = response; 
-  
-          // If the login is successful and you have a token
-          if (token) {
-              if (!expiresIn) {
-                  console.error('Token expiration not found in login response. Cannot set token.');
-                  throw new Error('Token expiration not found in login response. Cannot set token.');
-              }
-  
-              const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
-              console.log('Expiration date:', expirationDate);
-              Cookies.set('token', token, { expires: expirationDate, secure: true, sameSite: 'strict' });
-              console.log('Token:', token);
-              login(token); 
-  
-              // Check if user has registered a passkey
-              if (!hasRegisteredPasskey && sanitizedValues.email) {
-                  try {
-                      await registerPasskey(sanitizedValues.identifier, sanitizedValues.email); 
-                  } catch (registerError) {
-                      console.error('Error registering passkey:', registerError);
-                      setError(registerError.response?.data?.error || 'Failed to register passkey. Please try again.');
-                  }
-              }
-  
-              navigate('/movies'); 
-          }
-      } catch (error) {
-          console.error('Error submitting data:', error);
-          setError(error.response?.data?.error || 'Invalid Credentials. Please try again.');
-      }
-  },
-  
-  
-  });
-
-  const registerPasskey = async (userId, email) => {
-    console.log('Registering passkey with userId:', userId, 'and email:', email);
-    const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/register-passkey`, { userId, email });
-    const publicKeyCredentialCreationOptions = response.data;
-
-    const challengeBuffer = base64ToArrayBuffer(publicKeyCredentialCreationOptions.challenge);
-    publicKeyCredentialCreationOptions.challenge = challengeBuffer;
-    publicKeyCredentialCreationOptions.user.id = new TextEncoder().encode(userId); 
-
-    let credential;
-    try {
-        credential = await navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions });
-        console.log('Created credential:', credential);
-    } catch (error) {
-        console.error('Error during credential creation:', error);
-        throw error; 
-    }
-
-    const webauthnid = credential.id; 
-    const webauthnpublickey = credential.rawId; 
-
-    await axios.post(`${process.env.REACT_APP_BACKEND_API}/verify-passkey`, {
-        credential,
-        email,
-        userId,
-        webauthnid,
-        webauthnpublickey
-    });
-
-    return { webauthnid, webauthnpublickey };
-  };
 
   const authenticateWithPasskey = async (identifier, password) => {
-    console.log('Initiating passkey authentication for user input:',identifier); 
+    // console.log('Initiating passkey authentication for user input:',identifier); 
 
     try {
-        const payload = { identifier, password, username: formik.values.username, email: formik.values.email };
-        console.log('Payload:', payload);
+        // const payload = { identifier, password, username: formik.values.username, email: formik.values.email };
+        // console.log('Payload:', payload);
         const userIdentifier = identifier || (isLogin ? (formik.values.email || formik.values.username) : '');
 
         const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/authenticate-passkey`, { identifier: userIdentifier });
         const publicKeyCredentialRequestOptions = response.data;
-        console.log('Public Key Credential Request Options:', publicKeyCredentialRequestOptions);
+        // console.log('Public Key Credential Request Options:', publicKeyCredentialRequestOptions);
 
         const credential = await navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions });
-        console.log('Created credential:', credential); 
+        // console.log('Created credential:', credential); 
 
         const webauthnid = credential.id;
         const webauthnpublickey = credential.rawId;
@@ -201,12 +50,12 @@ const LoginAndSignUpComponent = () => {
             webauthnpublickey 
         });
 
-        console.log('Verification Response:', existingUserResponse.data); 
+        // console.log('Verification Response:', existingUserResponse.data); 
 
         const { token, expiresIn } = existingUserResponse.data;
-        console.log('Received token:', token); 
+        // console.log('Received token:', token); 
         const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
-        console.log('Token expiration date:', expirationDate); 
+        // console.log('Token expiration date:', expirationDate); 
 
         Cookies.set('token', token, { expires: expirationDate, secure: true, sameSite: 'strict' });
         login(token);

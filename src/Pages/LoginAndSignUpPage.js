@@ -1,10 +1,10 @@
 import LoginAndSignUpComponent from "../Components/LoginAndSignUpComponent";
 
-const LoginAndSignUpPage = () => {
+const LoginAndSignUpPage = ({ registerPasskey, loginUser, signUpUser, formik }) => {
 
     return (
         <div>
-            <LoginAndSignUpComponent />
+            <LoginAndSignUpComponent formik={formik} registerPasskey={registerPasskey} loginUser={loginUser} signUpUser={signUpUser}/>
         </div>
     );
 

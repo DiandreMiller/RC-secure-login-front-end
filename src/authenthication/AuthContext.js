@@ -19,8 +19,14 @@ const AuthProvider = ({ children }) => {
         setCanRegisterPasskey(false);
     };
 
+    const reset = () => {
+        setIsAuthenticated(false);
+        setToken(null);
+        setCanRegisterPasskey(false);
+    };
+
     return (
-        <AuthContext.Provider value={{ isAuthenticated, token, login, logout, canRegisterPasskey }}>
+        <AuthContext.Provider value={{ isAuthenticated, token, login, logout, reset, canRegisterPasskey }}>
             {children}
         </AuthContext.Provider>
     );

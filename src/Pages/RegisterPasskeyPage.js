@@ -1,10 +1,10 @@
 import RegisterPasskeyComponent from "../Components/RegisterPasskeyComponent";
 
-const RegisterPasskey = () => {
+const RegisterPasskey = ({formik, registerPasskey, signUpUser, loginUser}) => {
 
     return (
         <div>
-            <RegisterPasskeyComponent />
+            <RegisterPasskeyComponent formik={formik} registerPasskey={registerPasskey} signUpUser={signUpUser} loginUser={loginUser} />
         </div>
     )
 };

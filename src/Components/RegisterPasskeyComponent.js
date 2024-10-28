@@ -1,55 +1,56 @@
 import React, { useState } from "react";
 import RedCanary from '../Images/Red-Canary-We-got-you.jpg';
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { base64ToArrayBuffer } from '../utils/arrayBufferUtils';
-import axios from 'axios';
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const RegisterPasskeyComponent = () => {
+const RegisterPasskeyComponent = ({ registerPasskey }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
-  
-  const { userId, email, identifier } = location.state || {};
+  const { userId, email } = location.state || {};
 
-  const registerPasskey = async () => {
+  const backEndUrl = process.env.REACT_APP_BACKEND_API;
+ 
+//   console.log("Registering passkey with userId:", userId, "and email:", email);
+
+  const handleRegisterPasskey = async (event) => {
+    event.preventDefault(); 
+
+    // Check if userId and email are defined before proceeding
+    if (!userId || !email) {
+    //   console.log('Location state:', location.state);
+      console.error('User ID or Email is undefined!');
+      setError('User ID or Email is required for registration.');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/register-passkey`, { userId, identifier });
-      const publicKeyCredentialCreationOptions = response.data;
+      const response = await axios.post(`${backEndUrl}/register-passkey` , { identifier: email });
+      const options = response.data;
 
-      const challengeBuffer = base64ToArrayBuffer(publicKeyCredentialCreationOptions.challenge);
-      publicKeyCredentialCreationOptions.challenge = challengeBuffer;
-      publicKeyCredentialCreationOptions.user.id = new TextEncoder().encode(userId);
+      options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
+      options.user.id = Uint8Array.from(atob(options.user.id), c => c.charCodeAt(0));
 
-      let credential = await navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions });
-      const webauthnid = credential.id; 
-      const webauthnpublickey = credential.rawId;
+      // Create the credential using the WebAuthn API
+      const credential = await navigator.credentials.create({ publicKey: options });
+    //   console.log('Credential:', credential);
 
-      await axios.post(`${process.env.REACT_APP_BACKEND_API}/verify-passkey`, {
-        credential,
-        email,
-        userId,
-        identifier,
-        webauthnid,
-        webauthnpublickey
-      });
+      // Use the registerPasskey prop here
+      await registerPasskey({userId, email, credential }); 
 
-      console.log('Passkey registration successful:', { webauthnid, webauthnpublickey });
-      navigate('/movies');
-    } catch (error) {
-      console.error('Error during passkey registration:', error);
+      // Verify the credential with the backend
+      await axios.post(`${backEndUrl}/verify-passkey`, {userId, email, credential });
+      navigate('/movies');  
+    } catch (err) {
+      console.error('Error during passkey registration:', err);
       setError('Failed to register passkey. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-
-  React.useEffect(() => {
-    if (userId && email && identifier) {
-      setLoading(true);
-      registerPasskey();
-    }
-  }, [userId, email, identifier]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
@@ -71,11 +72,13 @@ const RegisterPasskeyComponent = () => {
         </section>
 
         <section className="mb-16 flex space-x-4">
-          <Link to='/'>
-            <button className="bg-red-500 hover:bg-red-600 text-white text-lg py-3 px-8 rounded-full transition-all duration-300 w-40">
-              Back to Home
-            </button>
-          </Link>
+          <button
+            onClick={handleRegisterPasskey}
+            disabled={loading}
+            className="bg-green-500 hover:bg-green-600 text-white text-lg py-2 px-6 rounded-full transition-all duration-300 min-w-[160px] text-center"
+          >
+            Register Passkey
+          </button>
         </section>
       </main>
     </div>

@@ -31,7 +31,9 @@ import RegisterPasskey from './Pages/RegisterPasskeyPage';
 
 const AppContent = () => {
   const navigate = useNavigate();
+  // eslint-disable-next-line no-unused-vars
   const [isLogin, setIsLogin] = useState(true);
+  // eslint-disable-next-line no-use-before-define
   const [error, setError] = useState('');
   const { login, logout, reset } = useAuth();
   const backEndUrl = process.env.REACT_APP_BACKEND_API;

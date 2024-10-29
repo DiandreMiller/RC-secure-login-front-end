@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 
 
-const LoginAndSignUpComponent = ({ formik, registerPasskey, signUpUser, loginUser }) => {
+const LoginAndSignUpComponent = ({ formik, userError }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -85,7 +85,7 @@ const LoginAndSignUpComponent = ({ formik, registerPasskey, signUpUser, loginUse
         <h2 className="text-3xl font-bold mb-6 text-center">
           {isLogin ? 'Login' : 'Sign Up'}
         </h2>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {userError && <p className="text-red-500 mb-4">{userError}</p>}
         <form onSubmit={formik.handleSubmit}>
           {!isLogin && (
             <div className="mb-4">

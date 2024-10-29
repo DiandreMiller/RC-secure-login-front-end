@@ -34,7 +34,7 @@ const AppContent = () => {
   // eslint-disable-next-line no-unused-vars
   const [isLogin, setIsLogin] = useState(true);
   // eslint-disable-next-line no-use-before-define
-  const [error, setError] = useState('');
+  const [userError, setUserError] = useState('');
   const { login, logout, reset } = useAuth();
   const backEndUrl = process.env.REACT_APP_BACKEND_API;
 
@@ -189,7 +189,7 @@ const loginUser = async (userData) => {
         }
       } catch (error) {
         console.error('Error submitting data:', error);
-        setError(error.response?.data?.error || 'Invalid Credentials. Please try again.');
+        setUserError(error.response?.data?.error || 'Invalid Credentials. Please try again.');
       }
     },
   });
@@ -213,7 +213,7 @@ const loginUser = async (userData) => {
         <Route element={<ForgotPasswordPage />} path='/forgot-password' />
         <Route element={<LearnMorePage />} path='/learn-more' />
         <Route
-          element={<LoginAndSignUpPage formik={formik} loginUser={loginUser} registerPasskey={registerPasskey} signUpUser={signUpUser} />}
+          element={<LoginAndSignUpPage userError={userError} formik={formik} loginUser={loginUser} registerPasskey={registerPasskey} signUpUser={signUpUser} />}
           path='/login-signup'
         />
         <Route

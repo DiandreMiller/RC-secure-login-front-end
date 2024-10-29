@@ -7,6 +7,7 @@ import axios from 'axios';
 
 const LoginAndSignUpComponent = ({ formik, userError }) => {
   const [isLogin, setIsLogin] = useState(true);
+   // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   // eslint-disable-next-line no-unused-vars

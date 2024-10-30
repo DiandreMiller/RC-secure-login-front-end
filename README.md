@@ -60,3 +60,4 @@ The frontend is deployed using Netlify. You can access the live application here
 For more information about Formik, visit the official documentation:
 
 [**Formik Documentation**](https://formik.org/docs/overview)
+[**Passkeys Documentation**](https://webauthn.passwordless.id/)

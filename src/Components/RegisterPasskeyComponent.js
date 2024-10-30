@@ -77,7 +77,7 @@ const RegisterPasskeyComponent = ({ registerPasskey }) => {
             disabled={loading}
             className="bg-green-500 hover:bg-green-600 text-white text-lg py-2 px-6 rounded-full transition-all duration-300 min-w-[160px] text-center"
           >
-            Register Passkey
+            Login In With Passkey
           </button>
         </section>
       </main>

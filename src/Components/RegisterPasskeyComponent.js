@@ -56,7 +56,7 @@ const RegisterPasskeyComponent = ({ registerPasskey }) => {
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       <header className="flex flex-col items-center justify-center pt-16">
         <img src={RedCanary} alt="Red Canary" className="w-48 mb-6" />
-        <h1 className="text-4xl font-bold">Register Your Passkey</h1>
+        <h1 className="text-4xl font-bold">Login With Your Passkey</h1>
         <p className="text-lg text-red-500 mt-2">Enhance Your Security</p>
       </header>
 
@@ -64,8 +64,8 @@ const RegisterPasskeyComponent = ({ registerPasskey }) => {
         <section className="max-w-3xl mb-12">
           <h2 className="text-3xl font-semibold mb-6">Secure Your Account</h2>
           <p className="text-lg">
-            Registering a passkey adds an extra layer of security to your account.
-            Follow the steps below to set up your passkey.
+            Logging in with a passkey adds an extra layer of security to your account.
+            Click the button below to log in with your passkey.
           </p>
           {error && <p className="text-red-500">{error}</p>}
           {loading && <p>Loading...</p>}

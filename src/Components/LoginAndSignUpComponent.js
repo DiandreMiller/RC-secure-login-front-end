@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../authenthication/AuthContext';
-import Cookies from 'js-cookie';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
+
 
 
 const LoginAndSignUpComponent = ({ formik, userError, isLogin, setIsLogin, signupUserMessage }) => {
@@ -12,8 +10,6 @@ const LoginAndSignUpComponent = ({ formik, userError, isLogin, setIsLogin, signu
   // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
-  const { login } = useAuth();
 
   const handleToggle = () => {
     setIsLogin(!isLogin);
@@ -29,46 +25,6 @@ const LoginAndSignUpComponent = ({ formik, userError, isLogin, setIsLogin, signu
       setIsLogin(true);
     }
   }, [signupUserMessage, setIsLogin]);
-
-
-  const authenticateWithPasskey = async (identifier, password) => {
-
-    try {
-        const userIdentifier = identifier || (isLogin ? (formik.values.email || formik.values.username) : '');
-
-        const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/authenticate-passkey`, { identifier: userIdentifier });
-        const publicKeyCredentialRequestOptions = response.data;
-        // console.log('Public Key Credential Request Options:', publicKeyCredentialRequestOptions);
-
-        const credential = await navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions });
-        // console.log('Created credential:', credential); 
-
-        const webauthnid = credential.id;
-        const webauthnpublickey = credential.rawId;
-
-        const existingUserResponse = await axios.post(`${process.env.REACT_APP_BACKEND_API}/verify-passkey`, {
-            credential,
-            identifier: userIdentifier,
-            password,
-            userId: publicKeyCredentialRequestOptions.user.id,
-            webauthnid, 
-            webauthnpublickey 
-        });
-
-        // console.log('Verification Response:', existingUserResponse.data); 
-
-        const { token, expiresIn } = existingUserResponse.data;
-        // console.log('Received token:', token); 
-        const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
-        // console.log('Token expiration date:', expirationDate); 
-
-        Cookies.set('token', token, { expires: expirationDate, secure: true, sameSite: 'strict' });
-        login(token);
-        navigate('/movies');
-    } catch (error) {
-        console.error('Error during authentication:', error); 
-    }
-  };
 
 
   return (

@@ -35,6 +35,7 @@ const AppContent = () => {
   const [isLogin, setIsLogin] = useState(true);
   // eslint-disable-next-line no-use-before-define
   const [userError, setUserError] = useState('');
+  const [signupUserMessage, setSignUpUserMessage] = useState('');
   const { login, logout, reset } = useAuth();
   const backEndUrl = process.env.REACT_APP_BACKEND_API;
 
@@ -44,6 +45,7 @@ const AppContent = () => {
       console.log('Sign-up response:', response.data);
       
       if (response.data && response.data.message === "User created") {
+        setSignUpUserMessage(response.data.message);
         return response.data.user; 
       } else {
         throw new Error("Sign-up failed. Please try again."); 
@@ -214,7 +216,7 @@ const loginUser = async (userData) => {
         <Route element={<LearnMorePage />} path='/learn-more' />
         <Route
           element={<LoginAndSignUpPage userError={userError} formik={formik} loginUser={loginUser} 
-          registerPasskey={registerPasskey} 
+          registerPasskey={registerPasskey} signupUserMessage={signupUserMessage}
           isLogin={isLogin} setIsLogin={setIsLogin}/>}
           path='/login-signup'
         />

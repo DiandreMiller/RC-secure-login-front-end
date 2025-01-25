@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../authenthication/AuthContext';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
 
-const LoginAndSignUpComponent = ({ formik, userError, isLogin, setIsLogin }) => {
+const LoginAndSignUpComponent = ({ formik, userError, isLogin, setIsLogin, signupUserMessage }) => {
    // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -19,18 +19,21 @@ const LoginAndSignUpComponent = ({ formik, userError, isLogin, setIsLogin }) => 
     setIsLogin(!isLogin);
   };
 
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  console.log('isLogin:', isLogin);
+  useEffect(() => {
+    if (signupUserMessage) {
+      setIsLogin(true);
+    }
+  }, [signupUserMessage, setIsLogin]);
+
 
   const authenticateWithPasskey = async (identifier, password) => {
-    // console.log('Initiating passkey authentication for user input:',identifier); 
 
     try {
-        // const payload = { identifier, password, username: formik.values.username, email: formik.values.email };
-        // console.log('Payload:', payload);
         const userIdentifier = identifier || (isLogin ? (formik.values.email || formik.values.username) : '');
 
         const response = await axios.post(`${process.env.REACT_APP_BACKEND_API}/authenticate-passkey`, { identifier: userIdentifier });
@@ -64,18 +67,6 @@ const LoginAndSignUpComponent = ({ formik, userError, isLogin, setIsLogin }) => 
         navigate('/movies');
     } catch (error) {
         console.error('Error during authentication:', error); 
-    }
-  };
-
-  const handlePasskeyLogin = async () => {
-    setLoading(true);
-    try {
-        await authenticateWithPasskey(formik.values.identifier, formik.values.password);
-    } catch (error) {
-        console.error('Error during passkey login:', error);
-        setError(error.response?.data?.error || 'Failed to authenticate with passkey. Please try again.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -183,23 +174,6 @@ const LoginAndSignUpComponent = ({ formik, userError, isLogin, setIsLogin }) => 
             {isLogin ? 'Login' : 'Sign Up'}
           </button>
   
-          {isLogin ? (
-            <button
-              onClick={handlePasskeyLogin}
-              type="button"
-              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded w-full mt-4"
-            >
-              Login with Passkey
-            </button>
-          ) : (
-            <button
-              onClick={handlePasskeyLogin}
-              type="button"
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full mt-4"
-            >
-              Sign Up with Passkey
-            </button>
-          )}
         </form>
         <p className="mt-4">
           {isLogin ? 'Don\'t have an account?' : 'Already have an account?'}

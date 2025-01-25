@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 
 const Navbar = ({ onLogOut }) => {
   // const { logout, reset } = useAuth(); 
-  // const navigate = useNavigate();
 
   const handleLogout = () => {
     onLogOut();

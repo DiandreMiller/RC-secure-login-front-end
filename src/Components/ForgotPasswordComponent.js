@@ -8,9 +8,6 @@ const ForgotPasswordComponent = () => {
     e.preventDefault();
     const sanitizedEmail = DOMPurify.sanitize(e.target.email.value);
     console.log('Sanitized Email:', sanitizedEmail);
-
-    // Simulate sending reset link
-    //Find api that sends email
     setEmailSent(true);
   };
 

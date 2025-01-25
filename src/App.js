@@ -213,7 +213,9 @@ const loginUser = async (userData) => {
         <Route element={<ForgotPasswordPage />} path='/forgot-password' />
         <Route element={<LearnMorePage />} path='/learn-more' />
         <Route
-          element={<LoginAndSignUpPage userError={userError} formik={formik} loginUser={loginUser} registerPasskey={registerPasskey} signUpUser={signUpUser} />}
+          element={<LoginAndSignUpPage userError={userError} formik={formik} loginUser={loginUser} 
+          registerPasskey={registerPasskey} 
+          isLogin={isLogin} setIsLogin={setIsLogin}/>}
           path='/login-signup'
         />
         <Route

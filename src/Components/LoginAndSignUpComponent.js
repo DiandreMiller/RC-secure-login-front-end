@@ -5,8 +5,7 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 
 
-const LoginAndSignUpComponent = ({ formik, userError }) => {
-  const [isLogin, setIsLogin] = useState(true);
+const LoginAndSignUpComponent = ({ formik, userError, isLogin, setIsLogin }) => {
    // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -24,6 +23,7 @@ const LoginAndSignUpComponent = ({ formik, userError }) => {
     setShowPassword(!showPassword);
   };
 
+  console.log('isLogin:', isLogin);
 
   const authenticateWithPasskey = async (identifier, password) => {
     // console.log('Initiating passkey authentication for user input:',identifier); 

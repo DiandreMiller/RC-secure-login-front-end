@@ -36,6 +36,7 @@ const AppContent = () => {
   // eslint-disable-next-line no-use-before-define
   const [userError, setUserError] = useState('');
   const [signupUserMessage, setSignUpUserMessage] = useState('');
+  const [idOfUser, setIdOfUser] = useState('');
   const { login, logout, reset } = useAuth();
   const backEndUrl = process.env.REACT_APP_BACKEND_API;
 
@@ -61,6 +62,8 @@ const loginUser = async (userData) => {
   try {
     const response = await axios.post(`${backEndUrl}/sign-in`, userData);
     if (response.data && response.data.message === "Sign in is a success") {
+      setIdOfUser(response.data.user.id);
+      console.log('idOfUser app:', idOfUser);
       console.log('Login response App.js:', response.data);
       return {
         token: response.data.token,
@@ -204,11 +207,12 @@ const loginUser = async (userData) => {
       navigate('/'); 
   };
 
+
   
 
   return (
     <>
-      <Navbar onLogOut={handleLogout}/>
+      <Navbar idOfUser={idOfUser} onLogOut={handleLogout}/>
       <Routes>
         <Route element={<HomePage />} path='/' />
         <Route element={<AboutPage />} path='/about' />
@@ -217,7 +221,7 @@ const loginUser = async (userData) => {
         <Route
           element={<LoginAndSignUpPage userError={userError} formik={formik} loginUser={loginUser} 
           registerPasskey={registerPasskey} signupUserMessage={signupUserMessage}
-          isLogin={isLogin} setIsLogin={setIsLogin}/>}
+          isLogin={isLogin} setIsLogin={setIsLogin}/>} 
           path='/login-signup'
         />
         <Route

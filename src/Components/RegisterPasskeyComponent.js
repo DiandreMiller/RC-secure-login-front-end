@@ -36,7 +36,7 @@ const RegisterPasskeyComponent = ({ registerPasskey }) => {
 
       // Create the credential using the WebAuthn API
       const credential = await navigator.credentials.create({ publicKey: options });
-    //   console.log('Credential:', credential);
+      //  console.log('Credential:', credential);
 
       // Use the registerPasskey prop here
       await registerPasskey({userId, email, credential }); 

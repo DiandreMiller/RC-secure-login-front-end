@@ -63,8 +63,6 @@ const loginUser = async (userData) => {
     const response = await axios.post(`${backEndUrl}/sign-in`, userData);
     if (response.data && response.data.message === "Sign in is a success") {
       setIdOfUser(response.data.user.id);
-      console.log('idOfUser app:', idOfUser);
-      console.log('Login response App.js:', response.data);
       return {
         token: response.data.token,
         userId: response.data.user.id,

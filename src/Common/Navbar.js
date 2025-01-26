@@ -1,14 +1,11 @@
 import { Link } from 'react-router-dom';
 
 const Navbar = ({ onLogOut, idOfUser }) => {
-  // const { logout, reset } = useAuth(); 
 
   const handleLogout = () => {
     onLogOut();
   };
 
-  console.log('idOfUser:', idOfUser);
-  
   return (
     <nav className="bg-black p-4 flex justify-between items-center">
       <ul className="flex space-x-4">

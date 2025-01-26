@@ -4,8 +4,8 @@ import DOMPurify from 'dompurify'; // Prevent XSS attacks
 const ForgotPasswordComponent = () => {
   const [emailSent, setEmailSent] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
     const sanitizedEmail = DOMPurify.sanitize(e.target.email.value);
     console.log('Sanitized Email:', sanitizedEmail);
     setEmailSent(true);
